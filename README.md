@@ -99,3 +99,79 @@ docker compose down
 - a structured backlog for feature enhancements
 - a deployable app setup
 - a polished final demo and product walkthrough
+
+## Assignment 1 Setup
+
+Selected Application: Event Manager
+
+Required Software:
+Git 2.55.0
+Node.js 24.21.0
+npm 11.9.0
+Docker 29.8.1
+Docker Compose v5.5.1
+Visual Studio Code
+
+Evironment Setup:
+I cloned the shared event manager repository and created my personal branch assignment-1/Georgehh03.
+
+I created the backend environment file using this command:
+Copy-Item backend/.env.example backend/.env
+
+The backend uses PostgreSQL, which runs through DockerCompose.
+
+Install Dependencies:
+
+Ran this in the project root:
+npm --prefix backend install
+npm --prefix frontend install
+
+Docker and Prisma Setup:
+
+started PostgreSQL with:
+docker compose up -d
+docker compose ps
+
+Generate Prisma Client and apply the database migration:
+cd backend
+npx prisma generate
+npx prisma migrate dev --name init
+cd ..
+
+Starting the Application
+
+Started the backend in the first terminal with:
+npm --prefix backend run dev
+
+Opened a second terminal and started the frontend with:
+npm --prefix frontend run dev
+
+
+Local URLs and Ports:
+
+Frontend: http://localhost:5174
+Backend: http://localhost:4001
+Health-check endpoint: http://localhost:4001/api/health
+
+PostgreSQL: localhost:5433
+
+
+TypeScript Verification Change
+
+I added a HealthResponse interface to the backend to define the structure of the health Check API response.
+
+The interface contains three properties such as status, app, and message, which uses the TypeScript string type.
+
+I updated the /api/health endpoint to use this interface and returned a message to confirm that the backend is running alright.
+I tested the HealthCheck endpoint in my browser at http://localhost:4001/api/health
+
+Trouble Shooting:
+
+I encountered an issues where VS Code blocked my npm commands because script execution was disabled
+
+The terminal displayed: npm.ps1 cannot be loaded because running scripts is disabled on this system PSSecurityException
+
+I fixed the issue using this command that was generated from ChatGPT:
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+
+After changing the policy, I ran the command again and confirmed that npm was working now

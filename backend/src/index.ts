@@ -3,6 +3,11 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 dotenv.config();
+interface HealthResponse {
+  status: string;
+  app: string;
+  message: string;
+}
 
 const app = express();
 const port = Number(process.env.PORT || 4001);
@@ -22,7 +27,13 @@ const sampleRSVPs = [
 ];
 
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', app: 'event-manager-starter' });
+  const response: HealthResponse = {
+    status: 'ok',
+    app: 'event-manager-starter',
+    message: 'Event Manager backend is running'
+  };
+
+  res.json(response);
 });
 
 app.get('/api/events', (_req, res) => {
