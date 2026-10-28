@@ -1,4 +1,3 @@
-// Starter schema for event management app
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,15 +7,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id                String       @id @default(cuid())
+  name              String
+  email             String       @unique
+  passwordHash      String
+  createdAt         DateTime     @default(now())
+  sessions          Session[]
+  createdEvents     Event[]      @relation("EventCreator")
+  registrations     Registration[]
+  sentInvitations   Invitation[] @relation("InvitationSender")
+  receivedInvitations Invitation[] @relation("InvitationRecipient")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
 model Event {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  date        DateTime
-  location    String
-  capacity    Int
-  createdAt   DateTime @default(now())
-  attendees   RSVP[]
+  id             String         @id @default(cuid())
+  title          String
+  description    String?
+  date           DateTime
+  location       String
+  guidanceUrl    String?
+  capacity       Int
+  remainingSpots Int            @default(0)
+  priceCents     Int            @default(0)
+  createdAt      DateTime       @default(now())
+  createdById    String?
+  creator        User?          @relation("EventCreator", fields: [createdById], references: [id])
+  attendees      RSVP[]
+  registrations  Registration[]
+  invitations    Invitation[]
+
+  @@index([date])
+  @@index([createdById, date])
 }
 
 model RSVP {
@@ -26,4 +60,31 @@ model RSVP {
   status    String   @default("attending")
   createdAt DateTime @default(now())
   event     Event    @relation(fields: [eventId], references: [id])
+}
+
+model Registration {
+  id        String   @id @default(cuid())
+  eventId   String
+  userId    String
+  createdAt DateTime @default(now())
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([userId, createdAt])
+}
+
+model Invitation {
+  id          String   @id @default(cuid())
+  eventId     String
+  senderId    String
+  recipientId String
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  sender      User     @relation("InvitationSender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient   User     @relation("InvitationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, recipientId])
+  @@index([recipientId, status])
 }

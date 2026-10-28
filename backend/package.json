@@ -5,21 +5,38 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "dev:event": "tsx watch src/eventService/index.ts",
+    "dev:user": "tsx watch src/userService/index.ts",
+    "build": "prisma generate && tsc",
+    "start": "node dist/index.js",
+    "start:event": "node dist/eventService/index.js",
+    "start:user": "node dist/userService/index.js",
+    "prisma:generate": "prisma generate",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:push": "prisma db push"
   },
   "dependencies": {
-    "@prisma/client": "^5.16.0",
+    "@prisma/client": "^5.22.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "prisma": "^5.16.0"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/cors": "^2.8.5",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.2",
+    "@types/supertest": "^7.2.1",
+    "prisma": "^5.22.0",
+    "supertest": "^7.3.1",
     "tsx": "^4.19.1",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^5.0.5"
+  },
+  "allowScripts": {
+    "@prisma/client@5.22.0": true,
+    "esbuild@0.28.2": true,
+    "workerd@1.20260901.1": true
   }
 }
